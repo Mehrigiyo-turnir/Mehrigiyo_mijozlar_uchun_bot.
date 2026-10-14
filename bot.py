@@ -5,7 +5,7 @@ from flask import Flask
 from threading import Thread
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-ADMIN_ID = 123456789
+ADMIN_ID = 1271938077  # Sizning ID ingiz - endi sizga xabar keladi!
 bot = telebot.TeleBot(BOT_TOKEN)
 
 app = Flask('')
@@ -88,15 +88,29 @@ def mijoz_fikri(call):
 @bot.callback_query_handler(func=lambda call: call.data == "buyurtma")
 def buyurtma_start(call):
     bot.answer_callback_query(call.id)
-    bot.send_message(call.message.chat.id, "Telefon raqamingizni yozing:\n+998 90 123 45 67")
+    bot.send_message(call.message.chat.id, "📞 Telefon raqamingizni yozing:\nMasalan: +998 90 123 45 67")
 
-@bot.message_handler(func=lambda m: '+998' in m.text or '998' in m.text)
+@bot.message_handler(func=lambda m: m.text and ('998' in m.text or m.text.startswith('+') or m.text.replace(' ','').isdigit()))
 def qabul_qilish(message):
-    bot.send_message(message.chat.id, "✅ Rahmat! Tez orada bog'lanamiz!")
+    if len(message.text) < 9:
+        return
+    bot.send_message(message.chat.id, "✅ Rahmat! Buyurtmangiz qabul qilindi!\nTez orada siz bilan bog'lanamiz!")
+    
+    # SIZGA KELADIGAN XABAR
     try:
-        bot.send_message(ADMIN_ID, f"🔔 Yangi buyurtma!\nMijoz: {message.from_user.first_name}\nTel: {message.text}\n@{message.from_user.username}")
-    except:
-        pass
+        username = f"@{message.from_user.username}" if message.from_user.username else "Username yo'q"
+        matn = (
+            f"🔔 *YANGI BUYURTMA!*\n\n"
+            f"👤 Ismi: {message.from_user.first_name}\n"
+            f"📞 Tel: {message.text}\n"
+            f"💬 {username}\n"
+            f"🆔 ID: {message.from_user.id}\n"
+            f"📦 Mahsulot: Doctor Ali choyi - 40 ta ipak qopcha - 550,000 so'm\n"
+            f"⏰ 40 kunlik licheniya"
+        )
+        bot.send_message(ADMIN_ID, matn, parse_mode="Markdown")
+    except Exception as e:
+        print(f"Admin ga yuborishda xato: {e}")
 
 keep_alive()
 bot.infinity_polling()
