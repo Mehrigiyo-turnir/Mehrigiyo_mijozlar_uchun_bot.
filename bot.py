@@ -8,8 +8,8 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN")
 ADMIN_ID = 1271938077
 bot = telebot.TeleBot(BOT_TOKEN)
 
-# === VIDEO FILE_ID - SHU YERGA QO'YASIZ ===
-VIDEO_FILE_ID = ""  # Bu yerga BAACAgIAAxkB... kodni qo'yasiz
+# VIDEO ID - BU YERGA FILE_ID NI QO'YASIZ
+VIDEO_FILE_ID = ""  # Masalan: "BAACAgIAAxkBAAIy..."
 
 app = Flask('')
 @app.route('/')
@@ -31,13 +31,12 @@ def start(message):
 def choy_korsat(message):
     try:
         with open('ali_choy.jpg', 'rb') as photo:
-            caption = "550,000 so'm"
             markup = types.InlineKeyboardMarkup(row_width=2)
             markup.add(
                 types.InlineKeyboardButton("Tarkib va xususiyati", callback_data="tarkib"),
                 types.InlineKeyboardButton("Mijozlar fikri", callback_data="fikr")
             )
-            bot.send_photo(message.chat.id, photo, caption=caption, reply_markup=markup)
+            bot.send_photo(message.chat.id, photo, caption="550,000 so'm", reply_markup=markup)
     except:
         bot.send_message(message.chat.id, "Rasm topilmadi! ali_choy.jpg ni GitHub ga yuklang")
 
@@ -91,16 +90,17 @@ def mijoz_fikri(call):
             bot.send_video(call.message.chat.id, VIDEO_FILE_ID, caption="💬 Mijozlarimiz fikri:", supports_streaming=True, reply_markup=markup)
             return
         except Exception as e:
-            print(f"Video yuborishda xato: {e}")
+            print(f"Video xato: {e}")
     
-    bot.send_message(call.message.chat.id, "💬 *Mijozlarimiz fikri:*\n\nVideo yuklanmoqda... Admin tez orada joylaydi!", parse_mode="Markdown", reply_markup=markup)
+    bot.send_message(call.message.chat.id, "💬 Mijozlarimiz fikri tez orada joylanadi!", reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: call.data == "buyurtma")
 def buyurtma_start(call):
     bot.answer_callback_query(call.id)
     bot.send_message(call.message.chat.id, "📞 Telefon raqamingizni yozing:\nMasalan: +998 90 123 45 67")
 
-@bot.message_handler(func=lambda m: m.text and ('998' in m.text or m.text.startswith('+') or m.text.replace(' ','').isdigit()))
+# BUYURTMA QABUL QILISH - MARKDOWN XATOSI TO'G'RILANDI
+@bot.message_handler(func=lambda m: m.text and ('998' in m.text or m.text.startswith('+') or m.text.replace(' ','').replace('+','').replace('-','').isdigit()))
 def qabul_qilish(message):
     if len(message.text) < 9:
         return
@@ -108,27 +108,26 @@ def qabul_qilish(message):
     try:
         username = f"@{message.from_user.username}" if message.from_user.username else "Username yo'q"
         matn = (
-            f"🔔 *YANGI BUYURTMA!*\n\n"
-            f"👤 Ismi: {message.from_user.first_name}\n"
-            f"📞 Tel: {message.text}\n"
-            f"💬 {username}\n"
-            f"🆔 ID: {message.from_user.id}\n"
-            f"📦 Mahsulot: Doctor Ali choyi - 40 ta ipak qopcha - 550,000 so'm"
+            f"🔔 YANGI BUYURTMA!\n\n"
+            f"Ismi: {message.from_user.first_name}\n"
+            f"Tel: {message.text}\n"
+            f"{username}\n"
+            f"ID: {message.from_user.id}\n"
+            f"Mahsulot: Doctor Ali choyi - 550,000 so'm"
         )
-        bot.send_message(ADMIN_ID, matn, parse_mode="Markdown")
+        bot.send_message(ADMIN_ID, matn)
     except Exception as e:
-        print(f"Admin ga yuborishda xato: {e}")
+        print(f"Admin xato: {e}")
 
-# VIDEO FILE_ID OLISH UCHUN - FAQAT ADMIN UCHUN
+# VIDEO FILE_ID OLISH - FAQAT SIZ UCHUN
 @bot.message_handler(content_types=['video', 'document'])
 def video_id_olish(message):
-    # Hozir hamma uchun ochiq - file_id olgandan keyin yopamiz
     try:
         file_id = message.video.file_id if message.content_type == 'video' else message.document.file_id
-        bot.send_message(message.chat.id, f"✅ FILE_ID olindi:\n\n`{file_id}`\n\nShuni kodga qo'ying!", parse_mode="Markdown")
+        bot.send_message(message.chat.id, f"✅ FILE_ID:\n\n`{file_id}`\n\nShuni VIDEO_FILE_ID ga qo'ying!", parse_mode="Markdown")
         print(f"FILE_ID: {file_id}")
     except Exception as e:
-        bot.send_message(message.chat.id, f"Xato: {e}")
+        print(e)
 
 keep_alive()
 bot.infinity_polling()
