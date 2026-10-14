@@ -8,6 +8,11 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN")
 ADMIN_ID = 1271938077
 bot = telebot.TeleBot(BOT_TOKEN)
 
+# === YANGI QO'SHILGAN JOY 1 ===
+# Bu yerga videoning file_id sini qo'yamiz
+# Hozircha bo'sh, siz video yuborganingizdan keyin to'ldiramiz
+VIDEO_FILE_ID = ""  # Masalan: "BAACAgIAAxkBAAI..."
+
 app = Flask('')
 @app.route('/')
 def home():
@@ -77,24 +82,23 @@ def tarkib_info(call):
     markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="buyurtma"))
     bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
 
-# YANGILANGAN - ENDI VIDEO CHIQADI
+# === YANGI QO'SHILGAN JOY 2 - ESKI "fikr" O'CHIRILDI, YANGISI ===
 @bot.callback_query_handler(func=lambda call: call.data == "fikr")
 def mijoz_fikri(call):
     bot.answer_callback_query(call.id)
-    try:
-        if os.path.exists('otziv1.mp4'):
-            with open('otziv1.mp4', 'rb') as video:
-                markup = types.InlineKeyboardMarkup()
-                markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="buyurtma"))
-                bot.send_video(call.message.chat.id, video, caption="💬 *Mijozlarimiz fikri:*", parse_mode="Markdown", reply_markup=markup)
-                return
-    except Exception as e:
-        print(f"Video xato: {e}")
-    
-    bot.send_message(call.message.chat.id, "💬 *Mijozlarimiz fikri:*\n\nTez orada video otzivlar joylanadi!", parse_mode="Markdown")
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="buyurtma"))
-    bot.send_message(call.message.chat.id, "Buyurtma bering 👇", reply_markup=markup)
+    
+    # Agar VIDEO_FILE_ID bo'lsa - o'sha videoni yuboradi (00:00 bo'lmaydi)
+    if VIDEO_FILE_ID:
+        try:
+            bot.send_video(call.message.chat.id, VIDEO_FILE_ID, caption="💬 Mijozlarimiz fikri:", supports_streaming=True, reply_markup=markup)
+            return
+        except Exception as e:
+            print(f"File_id xato: {e}")
+    
+    # Hozircha file_id yo'q bo'lsa
+    bot.send_message(call.message.chat.id, "💬 *Mijozlarimiz fikri:*\n\nVideo yuklanmoqda... Admin tez orada joylaydi!", parse_mode="Markdown", reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: call.data == "buyurtma")
 def buyurtma_start(call):
@@ -120,6 +124,14 @@ def qabul_qilish(message):
         bot.send_message(ADMIN_ID, matn, parse_mode="Markdown")
     except Exception as e:
         print(f"Admin ga yuborishda xato: {e}")
+
+# === YANGI QO'SHILGAN JOY 3 - VIDEO ID OLISH UCHUN ===
+@bot.message_handler(content_types=['video'])
+def video_id_olish(message):
+    if message.from_user.id == ADMIN_ID:
+        file_id = message.video.file_id
+        bot.send_message(message.chat.id, f"✅ Video file_id olindi:\n\n`{file_id}`\n\nShu ID ni kodga VIDEO_FILE_ID ga qo'ying!", parse_mode="Markdown")
+        print(f"VIDEO FILE ID: {file_id}")
 
 keep_alive()
 bot.infinity_polling()
