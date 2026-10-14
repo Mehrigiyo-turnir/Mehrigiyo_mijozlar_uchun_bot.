@@ -10,7 +10,7 @@ bot = telebot.TeleBot(TOKEN)
 
 app = Flask('')
 @app.route('/')
-def home(): return "Bot ishlayapti!"
+def home(): return "OK"
 def run(): app.run(host='0.0.0.0', port=8080)
 def keep_alive(): Thread(target=run).start()
 
@@ -26,7 +26,6 @@ def choy_menu():
     markup.add("⬅️ Orqaga")
     return markup
 
-# START - FAQAT SALOM, CHOY HAQIDA YO'Q!
 @bot.message_handler(commands=['start'])
 def start(message):
     text = (
@@ -36,40 +35,49 @@ def start(message):
     )
     bot.send_message(message.chat.id, text, reply_markup=start_menu())
 
-# DOCTOR ALI CHOYI BOSILGANDA
 @bot.message_handler(func=lambda m: m.text and "Doctor Ali" in m.text)
 def doctor_ali(message):
     try:
         if os.path.exists("ali_choy.jpg"):
             with open("ali_choy.jpg", "rb") as photo:
-                bot.send_photo(message.chat.id, photo)
+                bot.send_photo(message.chat.id, photo, caption="DOCTOR ALI HEALTH TEA")
     except: pass
-
     bot.send_message(message.chat.id, "Narxi: 550,000 so'm\n\nQuyidagi menyudan tanlang 👇", reply_markup=choy_menu())
 
-# TARKIB
+# TO'LIQ TARKIB - ESKI YAXSHI ISHLAGAN VARIANT QAYTARILDI
 @bot.message_handler(func=lambda m: m.text and "Tarkib" in m.text)
 def tarkib(message):
     text = (
-        "🌿 *ALI HEALTH TEA - Tarkibi:*\n\n"
-        "✅ 40 ta ipak qopcha (40 kunlik kurs)\n"
-        "✅ 100% tabiiy\n"
-        "✅ Oshqozon, jigar, ichaklar uchun\n\n"
-        "Narxi: 550,000 so'm"
+        "🌿 *ALI HEALTH TEA - To'liq tarkibi va xususiyati:*\n\n"
+        "🍃 *Tarkibida:*\n"
+        "• Zanjabil, dolchin, qizilmiya\n"
+        "• Moychechak, yalpiz, karkade\n"
+        "• Tabiiy giyohlar aralashmasi\n\n"
+        "💚 *Foydalari:*\n"
+        "✅ Oshqozon yarasi, gastrit\n"
+        "✅ Jigar yog' bosishi, jig'ildon qaynashi\n"
+        "✅ Ichaklarni tozalash, qabziyat\n"
+        "✅ Safro haydash, ishtaha ochish\n\n"
+        "☕ *Ichish tartibi:*\n"
+        "Kuniga 1 mahal ovqatdan 30 daqiqa oldin\n"
+        "40 kunlik kurs - 40 ta ipak qopcha\n\n"
+        "💰 *Narxi: 550,000 so'm*\n"
+        "🚚 Yetkazib berish bepul!"
     )
     bot.send_message(message.chat.id, text, parse_mode="Markdown", reply_markup=choy_menu())
 
-# MIJOZLAR FIKRI - VIDEO
+# MIJOZLAR FIKRI - VIDEO QO'SHILDI
 @bot.message_handler(func=lambda m: m.text and "Mijozlar" in m.text)
 def otziv(message):
-    bot.send_message(message.chat.id, "Mijozlar fikri 👇")
+    bot.send_message(message.chat.id, "💚 Mijozlarimiz fikri:")
     try:
         if os.path.exists("otziv1.mp4"):
-            bot.send_chat_action(message.chat.id, 'upload_video')
-            with open("otziv1.mp4", 'rb') as video:
-                bot.send_video(message.chat.id, video, caption="💚 Mijozimiz fikri!")
+            with open("otziv1.mp4", "rb") as video:
+                bot.send_video(message.chat.id, video, caption="Mijozimizning haqiqiy natijasi! 👇")
+        else:
+            bot.send_message(message.chat.id, "Video topilmadi, fayl nomi otziv1.mp4 bo'lishi kerak")
     except Exception as e:
-        print(e)
+        bot.send_message(message.chat.id, f"Xato: {e}")
     bot.send_message(message.chat.id, "Tanlang 👇", reply_markup=choy_menu())
 
 @bot.message_handler(func=lambda m: m.text and "Buyurtma" in m.text)
@@ -81,7 +89,7 @@ def buyurtma(message):
 
 def get_contact(message):
     phone = message.contact.phone_number if message.contact else message.text
-    bot.send_message(message.chat.id, "✅ Rahmat! Buyurtmangiz qabul qilindi!", reply_markup=start_menu())
+    bot.send_message(message.chat.id, "✅ Rahmat! Qabul qilindi! Tez orada bog'lanamiz!", reply_markup=start_menu())
     try:
         bot.send_message(ADMIN_ID, f"🔔 YANGI BUYURTMA!\n📞 {phone}\n👤 {message.from_user.first_name}")
     except: pass
