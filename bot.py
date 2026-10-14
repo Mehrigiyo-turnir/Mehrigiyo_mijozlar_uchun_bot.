@@ -1,116 +1,151 @@
-import os
 import telebot
 from telebot import types
+import os
 from flask import Flask
 from threading import Thread
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
-ADMIN_ID = 1271938077  # Sizning ID ingiz - endi sizga xabar keladi!
-bot = telebot.TeleBot(BOT_TOKEN)
+TOKEN = os.environ.get("BOT_TOKEN")
+ADMIN_ID = 1271938077
 
+bot = telebot.TeleBot(TOKEN)
+
+# ----- Keep Alive (Render uxlatmasligi uchun) -----
 app = Flask('')
+
 @app.route('/')
 def home():
-    return "Bot is alive!"
+    return "Bot ishlayapti!"
+
 def run():
     app.run(host='0.0.0.0', port=8080)
+
 def keep_alive():
     t = Thread(target=run)
     t.start()
 
+# ----- Tugmalar -----
+def main_menu():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add("🌿 Mahsulot haqida", "⭐ Mijozlar fikri")
+    markup.add("🛒 Buyurtma berish")
+    return markup
+
+def order_markup():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    markup.add(types.KeyboardButton("📱 Raqamni yuborish", request_contact=True))
+    return markup
+
+def buyurtma_tugmasi():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add("🛒 Buyurtma berish")
+    markup.add("🌿 Mahsulot haqida", "⭐ Mijozlar fikri")
+    return markup
+
+# ----- /start -----
 @bot.message_handler(commands=['start'])
 def start(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add(types.KeyboardButton("☕ Doctor Ali choyi"))
-    bot.send_message(message.chat.id, "Assalomu alaykum! Mahsulotni tanlang:", reply_markup=markup)
-
-@bot.message_handler(func=lambda m: m.text == "☕ Doctor Ali choyi")
-def choy_korsat(message):
-    try:
-        with open('ali_choy.jpg', 'rb') as photo:
-            caption = "550,000 so'm"
-            markup = types.InlineKeyboardMarkup(row_width=2)
-            markup.add(
-                types.InlineKeyboardButton("Tarkib va xususiyati", callback_data="tarkib"),
-                types.InlineKeyboardButton("Mijozlar fikri", callback_data="fikr")
-            )
-            bot.send_photo(message.chat.id, photo, caption=caption, reply_markup=markup)
-    except:
-        bot.send_message(message.chat.id, "Rasm topilmadi!")
-
-@bot.callback_query_handler(func=lambda call: call.data == "tarkib")
-def tarkib_info(call):
-    bot.answer_callback_query(call.id)
     text = (
-        "🍃 *Doctor Ali choyi - 25 xil tabiiy o't!*\n\n"
-        "1️⃣ *Atirgul* — Yurak, davleniya, infarkt, insult\n"
-        "2️⃣ *Lavanda* — Asab, uyqu, davleniya\n"
-        "3️⃣ *Papaya* — Ostexondroz, Grija, Bo'g'imlar, Poleartirt\n"
-        "4️⃣ *Momaqaymoq* — Rak, onkologiya\n"
-        "5️⃣ *Qizilmiya* — Astma, Bronxit, Allergiya, Yo'tal, Istma\n"
-        "6️⃣ *Exinatseya* — Immunitet\n"
-        "7️⃣ *Limon o'ti* — Oshqozon, ishtaha\n"
-        "8️⃣ *Gulxayri* — Nafas yo'llari, Oshqozon ichak\n"
-        "9️⃣ *Mingbarg* — Yaralarni bitirishda, qandli diabet\n"
-        "🔟 *Tog' rayxoni* — Jigar, ishtaha, buyrak\n"
-        "1️⃣1️⃣ *Tog' jambili* — Xotira, uyqu, immunitet\n"
-        "1️⃣2️⃣ *Funduk* — Davleniya, ortiqcha vazn, varikoz\n"
-        "1️⃣3️⃣ *Zarchava* — Qon tozalashda, Revmatizmda\n"
-        "1️⃣4️⃣ *Guava* — Limfa tizimiga, immunitet\n"
-        "1️⃣5️⃣ *Astra* — Nafas yo'llari, Yaralarni bitirishda\n"
-        "1️⃣6️⃣ *Qora andiz* — Yo'tal, Gripp, Istma\n"
-        "1️⃣7️⃣ *Ivan choy* — Prostatit, quvvat, adenoma\n"
-        "1️⃣8️⃣ *Zaytun* — Qondagi infeksiyaga\n"
-        "1️⃣9️⃣ *Oq qayin* — Gijja\n"
-        "2️⃣0️⃣ *Sano* — Qabziyat\n"
-        "2️⃣1️⃣ *Mavrak* — Tomoq og'rig'i, qandli diabet\n"
-        "2️⃣2️⃣ *Rozmarin* — O't tosh kasalligi, ko'z o'tkirlashishi\n"
-        "2️⃣3️⃣ *Chakanda* — Gemaroy, teri kasalligi\n"
-        "2️⃣4️⃣ *Tol* — Qon suyultirishda\n"
-        "2️⃣5️⃣ *Zubturum* — Nafas yo'llari, immunitet\n\n"
-        "✅ 100% tabiiy\n"
-        "📦 Qadoqida 40 ta ipak qopcha mavjud\n"
-        "⏳ 40 kunlik licheniya\n"
-        "💰 550,000 so'm"
+        "Assalomu alaykum! 👋\n\n"
+        "🌿 *ALI HEALTH TEA* ga xush kelibsiz!\n\n"
+        "Oshqozon, jigar va ichaklarni tozalovchi tabiiy choy.\n"
+        "40 kunlik davolash kursi - 40 ta ipak qopcha.\n\n"
+        "Narxi: 550,000 so'm\n\n"
+        "Quyidagi menyudan tanlang 👇"
     )
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="buyurtma"))
-    bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
+    bot.send_message(message.chat.id, text, parse_mode="Markdown", reply_markup=main_menu())
 
-@bot.callback_query_handler(func=lambda call: call.data == "fikr")
-def mijoz_fikri(call):
-    bot.answer_callback_query(call.id)
-    bot.send_message(call.message.chat.id, "💬 *Mijozlarimiz fikri:*\n\nTez orada video otzivlar joylanadi!", parse_mode="Markdown")
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="buyurtma"))
-    bot.send_message(call.message.chat.id, "Buyurtma bering 👇", reply_markup=markup)
+# ----- Mahsulot haqida -----
+@bot.message_handler(func=lambda m: m.text == "🌿 Mahsulot haqida")
+def mahsulot(message):
+    text = (
+        "🌿 *ALI HEALTH TEA - Tarkibi:*\n\n"
+        "✅ 40 ta ipak qopcha (40 kunlik kurs)\n"
+        "✅ 100% tabiiy giyohlar\n"
+        "✅ Oshqozon yarasi, gastrit, jigar yog' bosishi uchun\n\n"
+        "💰 Narxi: 550,000 so'm\n"
+        "🚚 Yetkazib berish bepul!\n\n"
+        "Buyurtma berish uchun tugmani bosing 👇"
+    )
+    bot.send_message(message.chat.id, text, parse_mode="Markdown", reply_markup=buyurtma_tugmasi())
 
-@bot.callback_query_handler(func=lambda call: call.data == "buyurtma")
-def buyurtma_start(call):
-    bot.answer_callback_query(call.id)
-    bot.send_message(call.message.chat.id, "📞 Telefon raqamingizni yozing:\nMasalan: +998 90 123 45 67")
+# ----- Mijozlar fikri - VIDEO BILAN -----
+@bot.message_handler(func=lambda m: m.text == "⭐ Mijozlar fikri")
+def mijozlar_fikri(message):
+    bot.send_message(message.chat.id, "Mijozlarimizning haqiqiy fikri 👇\nIltimos kuting, video yuklanmoqda...")
 
-@bot.message_handler(func=lambda m: m.text and ('998' in m.text or m.text.startswith('+') or m.text.replace(' ','').isdigit()))
-def qabul_qilish(message):
-    if len(message.text) < 9:
+    # Videoni yuborish (2 joydan qidiradi)
+    video_sent = False
+    for path in ["otziv1.mp4", "videos/otziv1.mp4", "otziv1.MP4"]:
+        if os.path.exists(path):
+            try:
+                bot.send_chat_action(message.chat.id, 'upload_video')
+                with open(path, 'rb') as video:
+                    bot.send_video(
+                        message.chat.id,
+                        video,
+                        caption="💚 *ALI HEALTH TEA* - Mijozimizning haqiqiy natijasi!\n\nOshqozon va jigar uchun juda foydali ekanligini aytmoqda!",
+                        parse_mode="Markdown"
+                    )
+                video_sent = True
+                break
+            except Exception as e:
+                print(f"Video xato: {e}")
+
+    if not video_sent:
+        bot.send_message(message.chat.id, "Video hali yuklanmadi, tez orada qo'shiladi!")
+
+    bot.send_message(
+        message.chat.id,
+        "Siz ham sog'lig'ingizni tiklamoqchimisiz? 👇",
+        reply_markup=buyurtma_tugmasi()
+    )
+
+# ----- Buyurtma berish -----
+@bot.message_handler(func=lambda m: m.text == "🛒 Buyurtma berish")
+def buyurtma(message):
+    bot.send_message(
+        message.chat.id,
+        "📱 Iltimos telefon raqamingizni yuboring:\n\nTugmani bosing yoki raqamni yozing (+998...)",
+        reply_markup=order_markup()
+    )
+    bot.register_next_step_handler(message, get_contact)
+
+def get_contact(message):
+    phone = None
+    if message.contact:
+        phone = message.contact.phone_number
+    else:
+        phone = message.text
+
+    if not phone:
+        bot.send_message(message.chat.id, "Iltimos raqam yuboring!")
         return
-    bot.send_message(message.chat.id, "✅ Rahmat! Buyurtmangiz qabul qilindi!\nTez orada siz bilan bog'lanamiz!")
-    
-    # SIZGA KELADIGAN XABAR
+
+    # Mijozga javob
+    bot.send_message(
+        message.chat.id,
+        "✅ *Rahmat! Buyurtmangiz qabul qilindi!*\n\n"
+        "Tez orada operatorimiz siz bilan bog'lanadi!\n"
+        "🚚 Yetkazib berish bepul!",
+        parse_mode="Markdown",
+        reply_markup=main_menu()
+    )
+
+    # Sizga - ADMIN ga xabar
     try:
-        username = f"@{message.from_user.username}" if message.from_user.username else "Username yo'q"
-        matn = (
+        admin_text = (
             f"🔔 *YANGI BUYURTMA!*\n\n"
+            f"📞 Tel: {phone}\n"
             f"👤 Ismi: {message.from_user.first_name}\n"
-            f"📞 Tel: {message.text}\n"
-            f"💬 {username}\n"
             f"🆔 ID: {message.from_user.id}\n"
-            f"📦 Mahsulot: Doctor Ali choyi - 40 ta ipak qopcha - 550,000 so'm\n"
-            f"⏰ 40 kunlik licheniya"
+            f"🌿 Mahsulot: ALI HEALTH TEA\n"
+            f"💰 Narxi: 550,000 so'm"
         )
-        bot.send_message(ADMIN_ID, matn, parse_mode="Markdown")
+        bot.send_message(ADMIN_ID, admin_text, parse_mode="Markdown")
     except Exception as e:
         print(f"Admin ga yuborishda xato: {e}")
 
+# ----- Ishga tushirish -----
 keep_alive()
+print("Bot ishga tushdi...")
 bot.infinity_polling()
