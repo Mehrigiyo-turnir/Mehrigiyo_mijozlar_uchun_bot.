@@ -8,8 +8,8 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN")
 ADMIN_ID = 1271938077
 bot = telebot.TeleBot(BOT_TOKEN)
 
-# VIDEO FILE_ID - KEYIN BU YERGA QO'YASIZ
-VIDEO_FILE_ID = ""
+# ✅ VIDEO FILE_ID TAYYOR
+VIDEO_FILE_ID = "BAACAgIAAxkBAANaas9MA9e_BNu9Pg2fqLHekHxFSOcAAiukAAJXboFKacmQsAP-vEo9BA"
 
 app = Flask('')
 @app.route('/')
@@ -20,21 +20,6 @@ def run():
 def keep_alive():
     t = Thread(target=run)
     t.start()
-
-# 1 - VIDEO FILE_ID OLISH - MARKDOWN YO'Q, XATOSIZ!
-@bot.message_handler(content_types=['video', 'document'])
-def video_id_olish(message):
-    try:
-        if message.content_type == 'video':
-            file_id = message.video.file_id
-        else:
-            file_id = message.document.file_id
-        
-        bot.send_message(message.chat.id, "✅ FILE_ID OLINDI! Pastdagi kodni nusxalab oling:")
-        bot.send_message(message.chat.id, file_id)
-        print(f"FILE_ID: {file_id}")
-    except Exception as e:
-        print(f"Video xato: {e}")
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -60,34 +45,34 @@ def tarkib_info(call):
     bot.answer_callback_query(call.id)
     text = (
         "🍃 Doctor Ali choyi - 25 xil tabiiy o't!\n\n"
-        "1. Atirgul - Yurak, davleniya, infarkt, insult\n"
-        "2. Lavanda - Asab, uyqu, davleniya\n"
-        "3. Papaya - Ostexondroz, Grija, Bo'g'imlar\n"
-        "4. Momaqaymoq - Rak, onkologiya\n"
-        "5. Qizilmiya - Astma, Bronxit, Allergiya\n"
-        "6. Exinatseya - Immunitet\n"
-        "7. Limon o'ti - Oshqozon, ishtaha\n"
-        "8. Gulxayri - Nafas yo'llari\n"
-        "9. Mingbarg - Yara, diabet\n"
-        "10. Tog' rayxoni - Jigar, buyrak\n"
-        "11. Tog' jambili - Xotira, uyqu\n"
-        "12. Funduk - Davleniya, varikoz\n"
-        "13. Zarchava - Qon tozalash\n"
-        "14. Guava - Limfa, immunitet\n"
-        "15. Astra - Nafas yo'llari\n"
-        "16. Qora andiz - Yo'tal, Gripp\n"
-        "17. Ivan choy - Prostatit, quvvat\n"
-        "18. Zaytun - Infeksiya\n"
-        "19. Oq qayin - Gijja\n"
-        "20. Sano - Qabziyat\n"
-        "21. Mavrak - Tomoq, diabet\n"
-        "22. Rozmarin - O't tosh, ko'z\n"
-        "23. Chakanda - Gemaroy, teri\n"
-        "24. Tol - Qon suyultirish\n"
-        "25. Zubturum - Nafas, immunitet\n\n"
+        "1️⃣ Atirgul — Yurak, davleniya, infarkt, insult\n"
+        "2️⃣ Lavanda — Asab, uyqu, davleniya\n"
+        "3️⃣ Papaya — Ostexondroz, Grija, Bo'g'imlar, Poleartirt\n"
+        "4️⃣ Momaqaymoq — Rak, onkologiya\n"
+        "5️⃣ Qizilmiya — Astma, Bronxit, Allergiya, Yo'tal, Istma\n"
+        "6️⃣ Exinatseya — Immunitet\n"
+        "7️⃣ Limon o'ti — Oshqozon, ishtaha\n"
+        "8️⃣ Gulxayri — Nafas yo'llari, Oshqozon ichak\n"
+        "9️⃣ Mingbarg — Yaralarni bitirishda, qandli diabet\n"
+        "🔟 Tog' rayxoni — Jigar, ishtaha, buyrak\n"
+        "1️⃣1️⃣ Tog' jambili — Xotira, uyqu, immunitet\n"
+        "1️⃣2️⃣ Funduk — Davleniya, ortiqcha vazn, varikoz\n"
+        "1️⃣3️⃣ Zarchava — Qon tozalashda, Revmatizmda\n"
+        "1️⃣4️⃣ Guava — Limfa tizimiga, immunitet\n"
+        "1️⃣5️⃣ Astra — Nafas yo'llari, Yaralarni bitirishda\n"
+        "1️⃣6️⃣ Qora andiz — Yo'tal, Gripp, Istma\n"
+        "1️⃣7️⃣ Ivan choy — Prostatit, quvvat, adenoma\n"
+        "1️⃣8️⃣ Zaytun — Qondagi infeksiyaga\n"
+        "1️⃣9️⃣ Oq qayin — Gijja\n"
+        "2️⃣0️⃣ Sano — Qabziyat\n"
+        "2️⃣1️⃣ Mavrak — Tomoq og'rig'i, qandli diabet\n"
+        "2️⃣2️⃣ Rozmarin — O't tosh kasalligi, ko'z o'tkirlashishi\n"
+        "2️⃣3️⃣ Chakanda — Gemaroy, teri kasalligi\n"
+        "2️⃣4️⃣ Tol — Qon suyultirishda\n"
+        "2️⃣5️⃣ Zubturum — Nafas yo'llari, immunitet\n\n"
         "✅ 100% tabiiy\n"
-        "📦 40 ta ipak qopcha\n"
-        "⏳ 40 kunlik\n"
+        "📦 Qadoqida 40 ta ipak qopcha mavjud\n"
+        "⏳ 40 kunlik licheniya\n"
         "💰 550,000 so'm"
     )
     markup = types.InlineKeyboardMarkup()
@@ -99,13 +84,11 @@ def mijoz_fikri(call):
     bot.answer_callback_query(call.id)
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="buyurtma"))
-    if VIDEO_FILE_ID:
-        try:
-            bot.send_video(call.message.chat.id, VIDEO_FILE_ID, caption="💬 Mijozlarimiz fikri:", supports_streaming=True, reply_markup=markup)
-            return
-        except Exception as e:
-            print(f"Video yuborish xato: {e}")
-    bot.send_message(call.message.chat.id, "💬 Mijozlarimiz fikri tez orada!", reply_markup=markup)
+    try:
+        bot.send_video(call.message.chat.id, VIDEO_FILE_ID, caption="💬 Mijozlarimiz fikri:", supports_streaming=True, reply_markup=markup)
+    except Exception as e:
+        print(f"Video yuborish xato: {e}")
+        bot.send_message(call.message.chat.id, "💬 Mijozlarimiz fikri tez orada joylanadi!", reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: call.data == "buyurtma")
 def buyurtma_start(call):
@@ -118,11 +101,22 @@ def qabul_qilish(message):
         return
     bot.send_message(message.chat.id, "✅ Rahmat! Buyurtmangiz qabul qilindi!\nTez orada siz bilan bog'lanamiz!")
     try:
-        username = f"@{message.from_user.username}" if message.from_user.username else ""
-        matn = f"🔔 YANGI BUYURTMA!\nIsmi: {message.from_user.first_name}\nTel: {message.text}\n{username}\nID: {message.from_user.id}\nMahsulot: Doctor Ali choyi"
+        username = f"@{message.from_user.username}" if message.from_user.username else "Username yo'q"
+        matn = f"🔔 YANGI BUYURTMA!\nIsmi: {message.from_user.first_name}\nTel: {message.text}\n{username}\nID: {message.from_user.id}\nMahsulot: Doctor Ali choyi - 550,000 so'm"
         bot.send_message(ADMIN_ID, matn)
     except Exception as e:
         print(f"Admin xato: {e}")
+
+@bot.message_handler(content_types=['video', 'document'])
+def video_update(message):
+    if message.from_user.id != ADMIN_ID:
+        return
+    try:
+        file_id = message.video.file_id if message.content_type == 'video' else message.document.file_id
+        bot.send_message(message.chat.id, "✅ Yangi FILE_ID:")
+        bot.send_message(message.chat.id, file_id)
+    except Exception as e:
+        print(e)
 
 keep_alive()
 bot.infinity_polling()
