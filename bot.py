@@ -6,27 +6,20 @@ from threading import Thread
 
 TOKEN = os.environ.get("BOT_TOKEN")
 ADMIN_ID = 1271938077
-
 bot = telebot.TeleBot(TOKEN)
 
-# ----- Keep Alive (Render uxlatmasligi uchun) -----
+# Keep Alive
 app = Flask('')
-
 @app.route('/')
-def home():
-    return "Bot ishlayapti!"
-
-def run():
-    app.run(host='0.0.0.0', port=8080)
-
+def home(): return "Bot ishlayapti!"
+def run(): app.run(host='0.0.0.0', port=8080)
 def keep_alive():
-    t = Thread(target=run)
-    t.start()
+    Thread(target=run).start()
 
-# ----- Tugmalar -----
 def main_menu():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add("🌿 Mahsulot haqida", "⭐ Mijozlar fikri")
+    markup.add("☕ Doctor Ali choyi")
+    markup.add("Tarkib va xususiyati", "Mijozlar fikri")
     markup.add("🛒 Buyurtma berish")
     return markup
 
@@ -35,117 +28,76 @@ def order_markup():
     markup.add(types.KeyboardButton("📱 Raqamni yuborish", request_contact=True))
     return markup
 
-def buyurtma_tugmasi():
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add("🛒 Buyurtma berish")
-    markup.add("🌿 Mahsulot haqida", "⭐ Mijozlar fikri")
-    return markup
-
-# ----- /start -----
 @bot.message_handler(commands=['start'])
 def start(message):
     text = (
         "Assalomu alaykum! 👋\n\n"
-        "🌿 *ALI HEALTH TEA* ga xush kelibsiz!\n\n"
+        "🌿 *DOCTOR ALI HEALTH TEA* ga xush kelibsiz!\n\n"
         "Oshqozon, jigar va ichaklarni tozalovchi tabiiy choy.\n"
-        "40 kunlik davolash kursi - 40 ta ipak qopcha.\n\n"
-        "Narxi: 550,000 so'm\n\n"
+        "40 kunlik davolash kursi.\n\n"
+        "💰 Narxi: 550,000 so'm\n"
+        "🚚 Yetkazib berish bepul!\n\n"
         "Quyidagi menyudan tanlang 👇"
     )
     bot.send_message(message.chat.id, text, parse_mode="Markdown", reply_markup=main_menu())
 
-# ----- Mahsulot haqida -----
-@bot.message_handler(func=lambda m: m.text == "🌿 Mahsulot haqida")
-def mahsulot(message):
+# TARKIB - 2 ta nomga ham javob beradi
+@bot.message_handler(func=lambda m: m.text and ("Tarkib" in m.text or "Mahsulot" in m.text or "Doctor Ali" in m.text))
+def tarkib(message):
+    # Rasmni yuborish
+    try:
+        if os.path.exists("ali_choy.jpg"):
+            with open("ali_choy.jpg", "rb") as photo:
+                bot.send_photo(message.chat.id, photo, caption="DOCTOR ALI HEALTH TEA - PREMIUM")
+    except: pass
+
     text = (
-        "🌿 *ALI HEALTH TEA - Tarkibi:*\n\n"
+        "🌿 *Tarkibi va xususiyati:*\n\n"
         "✅ 40 ta ipak qopcha (40 kunlik kurs)\n"
         "✅ 100% tabiiy giyohlar\n"
-        "✅ Oshqozon yarasi, gastrit, jigar yog' bosishi uchun\n\n"
+        "✅ Oshqozon yarasi, gastrit uchun\n"
+        "✅ Jigar yog' bosishi, ichaklar uchun\n\n"
         "💰 Narxi: 550,000 so'm\n"
-        "🚚 Yetkazib berish bepul!\n\n"
-        "Buyurtma berish uchun tugmani bosing 👇"
+        "🚚 Yetkazib berish bepul!"
     )
-    bot.send_message(message.chat.id, text, parse_mode="Markdown", reply_markup=buyurtma_tugmasi())
+    bot.send_message(message.chat.id, text, parse_mode="Markdown", reply_markup=main_menu())
 
-# ----- Mijozlar fikri - VIDEO BILAN -----
-@bot.message_handler(func=lambda m: m.text == "⭐ Mijozlar fikri")
-def mijozlar_fikri(message):
-    bot.send_message(message.chat.id, "Mijozlarimizning haqiqiy fikri 👇\nIltimos kuting, video yuklanmoqda...")
+# MIJOZLAR FIKRI - VIDEO BILAN
+@bot.message_handler(func=lambda m: m.text and "Mijozlar" in m.text)
+def mijozlar(message):
+    bot.send_message(message.chat.id, "Mijozlarimizning haqiqiy fikri 👇")
+    try:
+        # Video yuborish
+        video_path = "otziv1.mp4"
+        if os.path.exists(video_path):
+            bot.send_chat_action(message.chat.id, 'upload_video')
+            with open(video_path, 'rb') as video:
+                bot.send_video(
+                    message.chat.id,
+                    video,
+                    caption="💚 DOCTOR ALI - Mijozimiz natijasi! Oshqozon uchun juda foydali!"
+                )
+        else:
+            bot.send_message(message.chat.id, "Video tez orada yuklanadi!")
+    except Exception as e:
+        print(f"Video xato: {e}")
+        bot.send_message(message.chat.id, f"Video yuborishda xato, lekin tez orada to'g'rilaymiz!")
 
-    # Videoni yuborish (2 joydan qidiradi)
-    video_sent = False
-    for path in ["otziv1.mp4", "videos/otziv1.mp4", "otziv1.MP4"]:
-        if os.path.exists(path):
-            try:
-                bot.send_chat_action(message.chat.id, 'upload_video')
-                with open(path, 'rb') as video:
-                    bot.send_video(
-                        message.chat.id,
-                        video,
-                        caption="💚 *ALI HEALTH TEA* - Mijozimizning haqiqiy natijasi!\n\nOshqozon va jigar uchun juda foydali ekanligini aytmoqda!",
-                        parse_mode="Markdown"
-                    )
-                video_sent = True
-                break
-            except Exception as e:
-                print(f"Video xato: {e}")
+    bot.send_message(message.chat.id, "Buyurtma berishni xohlaysizmi? 👇", reply_markup=main_menu())
 
-    if not video_sent:
-        bot.send_message(message.chat.id, "Video hali yuklanmadi, tez orada qo'shiladi!")
-
-    bot.send_message(
-        message.chat.id,
-        "Siz ham sog'lig'ingizni tiklamoqchimisiz? 👇",
-        reply_markup=buyurtma_tugmasi()
-    )
-
-# ----- Buyurtma berish -----
-@bot.message_handler(func=lambda m: m.text == "🛒 Buyurtma berish")
+# BUYURTMA
+@bot.message_handler(func=lambda m: m.text and "Buyurtma" in m.text)
 def buyurtma(message):
-    bot.send_message(
-        message.chat.id,
-        "📱 Iltimos telefon raqamingizni yuboring:\n\nTugmani bosing yoki raqamni yozing (+998...)",
-        reply_markup=order_markup()
-    )
+    bot.send_message(message.chat.id, "📱 Iltimos raqamingizni yuboring:", reply_markup=order_markup())
     bot.register_next_step_handler(message, get_contact)
 
 def get_contact(message):
-    phone = None
-    if message.contact:
-        phone = message.contact.phone_number
-    else:
-        phone = message.text
-
-    if not phone:
-        bot.send_message(message.chat.id, "Iltimos raqam yuboring!")
-        return
-
-    # Mijozga javob
-    bot.send_message(
-        message.chat.id,
-        "✅ *Rahmat! Buyurtmangiz qabul qilindi!*\n\n"
-        "Tez orada operatorimiz siz bilan bog'lanadi!\n"
-        "🚚 Yetkazib berish bepul!",
-        parse_mode="Markdown",
-        reply_markup=main_menu()
-    )
-
-    # Sizga - ADMIN ga xabar
+    phone = message.contact.phone_number if message.contact else message.text
+    bot.send_message(message.chat.id, "✅ Rahmat! Buyurtmangiz qabul qilindi!\nTez orada operator bog'lanadi!", reply_markup=main_menu())
     try:
-        admin_text = (
-            f"🔔 *YANGI BUYURTMA!*\n\n"
-            f"📞 Tel: {phone}\n"
-            f"👤 Ismi: {message.from_user.first_name}\n"
-            f"🆔 ID: {message.from_user.id}\n"
-            f"🌿 Mahsulot: ALI HEALTH TEA\n"
-            f"💰 Narxi: 550,000 so'm"
-        )
-        bot.send_message(ADMIN_ID, admin_text, parse_mode="Markdown")
-    except Exception as e:
-        print(f"Admin ga yuborishda xato: {e}")
+        bot.send_message(ADMIN_ID, f"🔔 YANGI BUYURTMA!\n📞 {phone}\n👤 {message.from_user.first_name}\n🆔 {message.from_user.id}")
+    except: pass
 
-# ----- Ishga tushirish -----
 keep_alive()
 print("Bot ishga tushdi...")
 bot.infinity_polling()
