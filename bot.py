@@ -4,9 +4,8 @@ from telebot import types
 from flask import Flask
 from threading import Thread
 
-# --- SOZLAMALAR ---
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-ADMIN_ID = 123456789  # O'zingizni ID ni yozing @userinfobot dan
+ADMIN_ID = 123456789
 bot = telebot.TeleBot(BOT_TOKEN)
 
 app = Flask('')
@@ -19,14 +18,12 @@ def keep_alive():
     t = Thread(target=run)
     t.start()
 
-# /start
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(types.KeyboardButton("☕ Doctor Ali choyi"))
     bot.send_message(message.chat.id, "Assalomu alaykum! Mahsulotni tanlang:", reply_markup=markup)
 
-# Doctor Ali choyi - FAQAT RASM + NARX
 @bot.message_handler(func=lambda m: m.text == "☕ Doctor Ali choyi")
 def choy_korsat(message):
     try:
@@ -39,9 +36,8 @@ def choy_korsat(message):
             )
             bot.send_photo(message.chat.id, photo, caption=caption, reply_markup=markup)
     except:
-        bot.send_message(message.chat.id, "Rasm topilmadi! ali_choy.jpg ni yuklang!")
+        bot.send_message(message.chat.id, "Rasm topilmadi!")
 
-# TARKIB - 25 XIL O'T TO'LIQ
 @bot.callback_query_handler(func=lambda call: call.data == "tarkib")
 def tarkib_info(call):
     bot.answer_callback_query(call.id)
@@ -72,13 +68,15 @@ def tarkib_info(call):
         "2️⃣3️⃣ *Chakanda* — Gemaroy, teri kasalligi\n"
         "2️⃣4️⃣ *Tol* — Qon suyultirishda\n"
         "2️⃣5️⃣ *Zubturum* — Nafas yo'llari, immunitet\n\n"
-        "✅ 100% tabiiy\n📦 20 ta filtr-paket\n💰 550,000 so'm"
+        "✅ 100% tabiiy\n"
+        "📦 Qadoqida 40 ta ipak qopcha mavjud\n"
+        "⏳ 40 kunlik licheniya\n"
+        "💰 550,000 so'm"
     )
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="buyurtma"))
     bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
 
-# MIJOZLAR FIKRI - VIDEO
 @bot.callback_query_handler(func=lambda call: call.data == "fikr")
 def mijoz_fikri(call):
     bot.answer_callback_query(call.id)
@@ -87,13 +85,12 @@ def mijoz_fikri(call):
     markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="buyurtma"))
     bot.send_message(call.message.chat.id, "Buyurtma bering 👇", reply_markup=markup)
 
-# BUYURTMA
 @bot.callback_query_handler(func=lambda call: call.data == "buyurtma")
 def buyurtma_start(call):
     bot.answer_callback_query(call.id)
     bot.send_message(call.message.chat.id, "Telefon raqamingizni yozing:\n+998 90 123 45 67")
 
-@bot.message_handler(func=lambda m: m.text.startswith('+998') or m.text.startswith('998') or '90' in m.text)
+@bot.message_handler(func=lambda m: '+998' in m.text or '998' in m.text)
 def qabul_qilish(message):
     bot.send_message(message.chat.id, "✅ Rahmat! Tez orada bog'lanamiz!")
     try:
