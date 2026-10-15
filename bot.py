@@ -9,6 +9,7 @@ ADMIN_ID = 1271938077
 bot = telebot.TeleBot(BOT_TOKEN)
 
 VIDEO_FILE_ID = "BAACAgIAAxkBAANaas9MA9e_BNu9Pg2fqLHekHxFSOcAAiukAAJXboFKacmQsAP-vEo9BA"
+ELIXIR_VIDEO_FILE_ID = "BAACAgIAAxkBAAN7atBTSs9OcU7AaDrO7eukkhGF1JoAAuqsAAKp7YFK3mfkIXGTzzU9BA"
 
 app = Flask('')
 @app.route('/')
@@ -24,10 +25,10 @@ def keep_alive():
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(types.KeyboardButton("☕ Doctor Ali choyi"))
-    markup.add(types.KeyboardButton(" Doctor Ali Elixir Premium"))
+    markup.add(types.KeyboardButton("Doctor Ali Elixir Premium"))
     bot.send_message(message.chat.id, "Assalomu alaykum! Mahsulotni tanlang:", reply_markup=markup)
 
-# ===== CHOY - ESKI KOD O'ZGARMADI =====
+# ===== CHOY =====
 @bot.message_handler(func=lambda m: m.text == "☕ Doctor Ali choyi")
 def choy_korsat(message):
     try:
@@ -87,8 +88,8 @@ def mijoz_fikri(call):
     except:
         bot.send_message(call.message.chat.id, "💬 Mijozlarimiz fikri tez orada!", reply_markup=markup)
 
-# ===== ELIXIR - SIZ YOZGAN ASIL TARKIB =====
-@bot.message_handler(func=lambda m: m.text == "🧴 Doctor Ali Elixir Premium")
+# ===== ELIXIR - EMOJI YO'Q =====
+@bot.message_handler(func=lambda m: m.text == "Doctor Ali Elixir Premium")
 def elixir_korsat(message):
     try:
         with open('elixir_premium.jpg', 'rb') as photo:
@@ -101,7 +102,7 @@ def elixir_korsat(message):
                 types.InlineKeyboardButton("🥄 Ichish tartibi", callback_data="elixir_ichish"),
                 types.InlineKeyboardButton("💬 Fikrlar", callback_data="elixir_fikr")
             )
-            bot.send_photo(message.chat.id, photo, caption="🧴 Elixir Premium Sirobi\n💰 700,000 so'm (330gr x 2 dona)", reply_markup=markup)
+            bot.send_photo(message.chat.id, photo, caption="Elixir Premium Sirobi\n💰 700,000 so'm (330gr x 2 dona)", reply_markup=markup)
     except:
         bot.send_message(message.chat.id, "elixir_premium.jpg rasmini yuklang!")
 
@@ -109,7 +110,7 @@ def elixir_korsat(message):
 def elixir_tarkib(call):
     bot.answer_callback_query(call.id)
     text = (
-        "🧴 Elixir Premium Sirobi - 22 xil meva va o'simliklar\n\n"
+        "Elixir Premium Sirobi - 22 xil meva va o'simliklar\n\n"
         "1️⃣ Anor va olma sharbati\n2️⃣ Tut\n3️⃣ Tarvuz\n4️⃣ Guava\n5️⃣ Papaya\n"
         "6️⃣ Do'lana\n7️⃣ Zarchva\n8️⃣ Zanjabil\n9️⃣ Rastaropsha\n🔟 Amarant\n"
         "1️⃣1️⃣ Zaytun\n1️⃣2️⃣ Ginko biloba\n1️⃣3️⃣ Kiprey\n1️⃣4️⃣ Goji\n1️⃣5️⃣ Igir\n"
@@ -155,7 +156,11 @@ def elixir_fikr(call):
     bot.answer_callback_query(call.id)
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="elixir_buyurtma"))
-    bot.send_message(call.message.chat.id, "💬 Mijozlar fikri tez orada!", reply_markup=markup)
+    try:
+        bot.send_video(call.message.chat.id, ELIXIR_VIDEO_FILE_ID, caption="💬 Elixir Premium - Mijozlarimiz fikri\n💚 100% natural natija!", supports_streaming=True, reply_markup=markup)
+    except Exception as e:
+        print(e)
+        bot.send_message(call.message.chat.id, "💬 Mijozlar fikri tez orada!", reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: call.data in ["buyurtma", "elixir_buyurtma"])
 def buyurtma_start(call):
