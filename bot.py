@@ -9,7 +9,9 @@ ADMIN_ID = 1271938077
 bot = telebot.TeleBot(BOT_TOKEN)
 
 VIDEO_FILE_ID = "BAACAgIAAxkBAANaas9MA9e_BNu9Pg2fqLHekHxFSOcAAiukAAJXboFKacmQsAP-vEo9BA"
-ELIXIR_VIDEO_FILE_ID = "BAACAgIAAxkBAAN7atBTSs9OcU7AaDrO7eukkhGF1JoAAuqsAAKp7YFK3mfkIXGTzzU9BA"
+ELIXIR_VIDEO_FILE_ID = "BAACAgIAAxkBAAN7atBTSs9OcU7AaDrO7eukkhGF1JoAAuqsAAKp7YFK3mfkIXGTzzUo9BA"
+KREM_VIDEO_ID_1 = "BAACAgIAAxkBAAOPatB1BvqP93UPUc1bo_1C76R2z4MAAuitAAKp7YFK0a4Bv_IxqLw9BA"
+KREM_VIDEO_ID_2 = "BAACAgIAAxkBAAOSatB1WPGI2rzUQ5AfPBqIgYbes0IAAu-tAAKp7YFK6OdSbCMR1Po9BA"
 
 app = Flask('')
 @app.route('/')
@@ -26,6 +28,7 @@ def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(types.KeyboardButton("☕ Doctor Ali choyi"))
     markup.add(types.KeyboardButton("Doctor Ali Elixir Premium"))
+    markup.add(types.KeyboardButton("🧴 Doctor Ali kremi"))
     bot.send_message(message.chat.id, "Assalomu alaykum! Mahsulotni tanlang:", reply_markup=markup)
 
 # ===== CHOY =====
@@ -88,7 +91,7 @@ def mijoz_fikri(call):
     except:
         bot.send_message(call.message.chat.id, "💬 Mijozlarimiz fikri tez orada!", reply_markup=markup)
 
-# ===== ELIXIR - EMOJI YO'Q =====
+# ===== ELIXIR =====
 @bot.message_handler(func=lambda m: m.text == "Doctor Ali Elixir Premium")
 def elixir_korsat(message):
     try:
@@ -162,10 +165,102 @@ def elixir_fikr(call):
         print(e)
         bot.send_message(call.message.chat.id, "💬 Mijozlar fikri tez orada!", reply_markup=markup)
 
-@bot.callback_query_handler(func=lambda call: call.data in ["buyurtma", "elixir_buyurtma"])
+# ===== YANGI - DOCTOR ALI KREMI - 2 VIDEO =====
+@bot.message_handler(func=lambda m: m.text == "🧴 Doctor Ali kremi")
+def krem_korsat(message):
+    try:
+        with open('doctor_ali_kremi.jpg', 'rb') as photo:
+            markup = types.InlineKeyboardMarkup(row_width=2)
+            markup.add(
+                types.InlineKeyboardButton("🌿 Tarkibi", callback_data="krem_tarkib"),
+                types.InlineKeyboardButton("💚 Foydasi", callback_data="krem_foyda")
+            )
+            markup.add(
+                types.InlineKeyboardButton("🖐 Qo'llanilishi", callback_data="krem_qollanish"),
+                types.InlineKeyboardButton("💬 Fikrlar", callback_data="krem_fikr")
+            )
+            bot.send_photo(message.chat.id, photo, caption="Doctor Ali Rayhon Kremi\n💰 600,000 so'm (3 dona)", reply_markup=markup)
+    except:
+        bot.send_message(message.chat.id, "doctor_ali_kremi.jpg rasmini yuklang!")
+
+@bot.callback_query_handler(func=lambda call: call.data == "krem_tarkib")
+def krem_tarkib(call):
+    bot.answer_callback_query(call.id)
+    text = (
+        "🌿 Doctor Ali kremi - Tarkibi:\n\n"
+        "✅ Zanjabil ekstrakti\n"
+        "✅ Lavanda efir moyi\n"
+        "✅ Mentol\n"
+        "✅ Kamfora\n"
+        "✅ Mum\n\n"
+        "✅ 100% tabiiy\n📦 3 dona\n💰 600,000 so'm"
+    )
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="krem_buyurtma"))
+    bot.send_message(call.message.chat.id, text, reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda call: call.data == "krem_foyda")
+def krem_foyda(call):
+    bot.answer_callback_query(call.id)
+    text = (
+        "💚 Doctor Ali kremi - Foydali xususiyati:\n\n"
+        "✔️ Qon aylanishini yaxshilashda\n"
+        "✔️ Og'riqlarni yengillashtiradi\n"
+        "✔️ Shamollash va yallig'lanishga qarshi kurashadi\n\n"
+        "🔹 Ko'proq qaysi kasalliklarda qo'llaniladi:\n"
+        "• Poliartrit\n"
+        "• Artrit\n"
+        "• Artroz\n"
+        "• Grija (bel churrasi)\n"
+        "• Asteaxandroz\n"
+        "• Mushaklar spazmi\n"
+        "• Shpora (tovon og'rig'i)\n"
+        "• Jarohatlardan keyingi tiklanish vaqtida\n\n"
+        "💰 600,000 so'm (3 dona)"
+    )
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="krem_buyurtma"))
+    bot.send_message(call.message.chat.id, text, reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda call: call.data == "krem_qollanish")
+def krem_qollanish(call):
+    bot.answer_callback_query(call.id)
+    text = (
+        "🖐 Qo'llanilishi:\n\n"
+        "Kunda 3 marotaba og'riqli va shikastlangan,\n"
+        "zararlangan joylarga surtiladi.\n\n"
+        "💰 600,000 so'm (3 dona)"
+    )
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="krem_buyurtma"))
+    bot.send_message(call.message.chat.id, text, reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda call: call.data == "krem_fikr")
+def krem_fikr(call):
+    bot.answer_callback_query(call.id)
+    try:
+        # 1-video
+        bot.send_video(call.message.chat.id, KREM_VIDEO_ID_1, caption="💬 Doctor Ali kremi - Mijozlarimiz fikri 1/2", supports_streaming=True)
+        # 2-video orqa-ma-orqa
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="krem_buyurtma"))
+        bot.send_video(call.message.chat.id, KREM_VIDEO_ID_2, caption="💬 Doctor Ali kremi - Mijozlarimiz fikri 2/2", supports_streaming=True, reply_markup=markup)
+    except Exception as e:
+        print(e)
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="krem_buyurtma"))
+        bot.send_message(call.message.chat.id, "💬 Mijozlar fikri tez orada!", reply_markup=markup)
+
+# ===== BUYURTMA =====
+@bot.callback_query_handler(func=lambda call: call.data in ["buyurtma", "elixir_buyurtma", "krem_buyurtma"])
 def buyurtma_start(call):
     bot.answer_callback_query(call.id)
-    turi = "Choy" if call.data == "buyurtma" else "Elixir Premium"
+    if call.data == "buyurtma":
+        turi = "Choy"
+    elif call.data == "elixir_buyurtma":
+        turi = "Elixir Premium"
+    else:
+        turi = "Doctor Ali kremi"
     bot.send_message(call.message.chat.id, f"📦 {turi} uchun\n📞 Telefon raqamingizni yozing:")
 
 @bot.message_handler(func=lambda m: m.text is not None and len(m.text) >= 9)
