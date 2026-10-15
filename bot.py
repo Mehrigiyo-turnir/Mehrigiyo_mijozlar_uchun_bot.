@@ -24,7 +24,7 @@ def keep_alive():
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(types.KeyboardButton("☕ Doctor Ali choyi"))
-    markup.add(types.KeyboardButton("🧴 Doctor Ali Elixir Premium"))
+    markup.add(types.KeyboardButton(" Doctor Ali Elixir Premium"))
     bot.send_message(message.chat.id, "Assalomu alaykum! Mahsulotni tanlang:", reply_markup=markup)
 
 # ===== CHOY - ESKI KOD O'ZGARMADI =====
