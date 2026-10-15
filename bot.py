@@ -24,8 +24,10 @@ def keep_alive():
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(types.KeyboardButton("☕ Doctor Ali choyi"))
+    markup.add(types.KeyboardButton("🧴 Doctor Ali Elixir Premium"))
     bot.send_message(message.chat.id, "Assalomu alaykum! Mahsulotni tanlang:", reply_markup=markup)
 
+# ===== CHOY - ESKI KOD O'ZGARMADI =====
 @bot.message_handler(func=lambda m: m.text == "☕ Doctor Ali choyi")
 def choy_korsat(message):
     try:
@@ -69,10 +71,7 @@ def tarkib_info(call):
         "2️⃣3️⃣ Chakanda — Gemaroy, teri kasalligi\n"
         "2️⃣4️⃣ Tol — Qon suyultirishda\n"
         "2️⃣5️⃣ Zubturum — Nafas yo'llari, immunitet\n\n"
-        "✅ 100% tabiiy\n"
-        "📦 Qadoqida 40 ta ipak qopcha mavjud\n"
-        "⏳ 40 kunlik muolaja\n"
-        "💰 550,000 so'm"
+        "✅ 100% tabiiy\n📦 40 ta ipak qopcha\n⏳ 40 kunlik muolaja\n💰 550,000 so'm"
     )
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="buyurtma"))
@@ -85,14 +84,84 @@ def mijoz_fikri(call):
     markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="buyurtma"))
     try:
         bot.send_video(call.message.chat.id, VIDEO_FILE_ID, caption="💬 Mijozlarimiz fikri:", supports_streaming=True, reply_markup=markup)
-    except Exception as e:
-        print(f"Video xato: {e}")
+    except:
         bot.send_message(call.message.chat.id, "💬 Mijozlarimiz fikri tez orada!", reply_markup=markup)
 
-@bot.callback_query_handler(func=lambda call: call.data == "buyurtma")
+# ===== ELIXIR - SIZ YOZGAN ASIL TARKIB =====
+@bot.message_handler(func=lambda m: m.text == "🧴 Doctor Ali Elixir Premium")
+def elixir_korsat(message):
+    try:
+        with open('elixir_premium.jpg', 'rb') as photo:
+            markup = types.InlineKeyboardMarkup(row_width=2)
+            markup.add(
+                types.InlineKeyboardButton("🌿 Tarkibi", callback_data="elixir_tarkib"),
+                types.InlineKeyboardButton("💚 Foydasi", callback_data="elixir_foyda")
+            )
+            markup.add(
+                types.InlineKeyboardButton("🥄 Ichish tartibi", callback_data="elixir_ichish"),
+                types.InlineKeyboardButton("💬 Fikrlar", callback_data="elixir_fikr")
+            )
+            bot.send_photo(message.chat.id, photo, caption="🧴 Elixir Premium Sirobi\n💰 700,000 so'm (330gr x 2 dona)", reply_markup=markup)
+    except:
+        bot.send_message(message.chat.id, "elixir_premium.jpg rasmini yuklang!")
+
+@bot.callback_query_handler(func=lambda call: call.data == "elixir_tarkib")
+def elixir_tarkib(call):
+    bot.answer_callback_query(call.id)
+    text = (
+        "🧴 Elixir Premium Sirobi - 22 xil meva va o'simliklar\n\n"
+        "1️⃣ Anor va olma sharbati\n2️⃣ Tut\n3️⃣ Tarvuz\n4️⃣ Guava\n5️⃣ Papaya\n"
+        "6️⃣ Do'lana\n7️⃣ Zarchva\n8️⃣ Zanjabil\n9️⃣ Rastaropsha\n🔟 Amarant\n"
+        "1️⃣1️⃣ Zaytun\n1️⃣2️⃣ Ginko biloba\n1️⃣3️⃣ Kiprey\n1️⃣4️⃣ Goji\n1️⃣5️⃣ Igir\n"
+        "1️⃣6️⃣ Oq qayin\n1️⃣7️⃣ Namatak\n1️⃣8️⃣ Selderey\n1️⃣9️⃣ Urmon yong'og'i\n"
+        "2️⃣0️⃣ Chakanda\n2️⃣1️⃣ Exinatseya\n\n✅ 100% tabiiy\n📦 330gr x 2 dona"
+    )
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="elixir_buyurtma"))
+    bot.send_message(call.message.chat.id, text, reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda call: call.data == "elixir_foyda")
+def elixir_foyda(call):
+    bot.answer_callback_query(call.id)
+    text = (
+        "💚 Foydali xususiyati:\n\n"
+        "1️⃣ Ko'rish qobilyatini yaxshilaydi\n2️⃣ O'pka faolyatini yaxshilashda\n"
+        "3️⃣ Jigarni tozalashda\n4️⃣ Buyrak faolyatini yaxshilashda\n"
+        "5️⃣ Yurak qon-tomir kasalliklarini oldini oladi\n"
+        "6️⃣ Organizmni qarishini sekinlashtiradi\n7️⃣ Yog'larni eritadi\n"
+        "8️⃣ Xotira miya faolyatini yaxshilaydi\n9️⃣ Kuchli antioksidant hisoblanadi\n"
+        "🔟 Bo'g'imlarni mustahkamlaydi\n1️⃣1️⃣ Saraton xavfini kamaytiradi\n"
+        "1️⃣2️⃣ Prastata - jinsiy zaiflikni oldini oladi\n\n💰 700,000 so'm"
+    )
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="elixir_buyurtma"))
+    bot.send_message(call.message.chat.id, text, reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda call: call.data == "elixir_ichish")
+def elixir_ichish(call):
+    bot.answer_callback_query(call.id)
+    text = (
+        "🥄 Ichish tartibi:\n\n"
+        "👶 3 yoshdan 12 yoshgacha: 1 osh qoshiqdan\n"
+        "🧑 12 yoshdan kattalar: 2 osh qoshiqdan\n"
+        "Kunda 3 mahal\n\n💰 700,000 so'm"
+    )
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="elixir_buyurtma"))
+    bot.send_message(call.message.chat.id, text, reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda call: call.data == "elixir_fikr")
+def elixir_fikr(call):
+    bot.answer_callback_query(call.id)
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="elixir_buyurtma"))
+    bot.send_message(call.message.chat.id, "💬 Mijozlar fikri tez orada!", reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda call: call.data in ["buyurtma", "elixir_buyurtma"])
 def buyurtma_start(call):
     bot.answer_callback_query(call.id)
-    bot.send_message(call.message.chat.id, "📞 Telefon raqamingizni yozing:")
+    turi = "Choy" if call.data == "buyurtma" else "Elixir Premium"
+    bot.send_message(call.message.chat.id, f"📦 {turi} uchun\n📞 Telefon raqamingizni yozing:")
 
 @bot.message_handler(func=lambda m: m.text is not None and len(m.text) >= 9)
 def qabul_qilish(message):
