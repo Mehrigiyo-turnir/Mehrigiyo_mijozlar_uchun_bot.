@@ -30,7 +30,7 @@ def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(types.KeyboardButton("☕ Doctor Ali choyi"))
     markup.add(types.KeyboardButton("Doctor Ali Elixir Premium"))
-    markup.add(types.KeyboardButton("🧴 Doctor Ali kremi"))
+    markup.add(types.KeyboardButton(" Doctor Ali kremi"))
     markup.add(types.KeyboardButton("🏔 Alatoo"))
     bot.send_message(message.chat.id, "Assalomu alaykum! Mahsulotni tanlang:", reply_markup=markup)
 
@@ -207,7 +207,7 @@ def elixir_fikr(call):
         bot.send_message(call.message.chat.id, "💬 Mijozlar fikri tez orada!", reply_markup=markup)
 
 # ===== KREM =====
-@bot.message_handler(func=lambda m: m.text == "🧴 Doctor Ali kremi")
+@bot.message_handler(func=lambda m: m.text == " Doctor Ali kremi")
 def krem_korsat(message):
     try:
         with open('doctor_ali_kremi.jpg', 'rb') as photo:
