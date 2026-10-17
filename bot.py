@@ -12,6 +12,8 @@ VIDEO_FILE_ID = "BAACAgIAAxkBAANaas9MA9e_BNu9Pg2fqLHekHxFSOcAAiukAAJXboFKacmQsAP
 ELIXIR_VIDEO_FILE_ID = "BAACAgIAAxkBAAOoatB3W-M6AQAB-6O4fUsizlhIsVmdAAIErgACqe2BShIC0a6dfwiQPQQ"
 KREM_VIDEO_ID_1 = "BAACAgIAAxkBAAOPatB1BvqP93UPUc1bo_1C76R2z4MAAuitAAKp7YFK0a4Bv_IxqLw9BA"
 KREM_VIDEO_ID_2 = "BAACAgIAAxkBAAOSatB1WPGI2rzUQ5AfPBqIgYbes0IAAu-tAAKp7YFK6OdSbCMR1Po9BA"
+ALATOO_VIDEO_ID = "BAACAgIAAxkBAAPLatNALr7Mt37CDOrLPC-CFaZQrusAAtiDAAJcn_FIMmbgpjqxcis9BA"
+ALATOO_FIKR_VIDEO_ID = "BAACAgIAAxkBAAPXatNFhhrjOwLUMGuHBRvlHPaEl84AAhutAAKMk6FKYpOKucWtLug9BA"
 
 app = Flask('')
 @app.route('/')
@@ -29,7 +31,46 @@ def start(message):
     markup.add(types.KeyboardButton("☕ Doctor Ali choyi"))
     markup.add(types.KeyboardButton("Doctor Ali Elixir Premium"))
     markup.add(types.KeyboardButton("🧴 Doctor Ali kremi"))
+    markup.add(types.KeyboardButton("🏔 Alatoo"))
     bot.send_message(message.chat.id, "Assalomu alaykum! Mahsulotni tanlang:", reply_markup=markup)
+
+# ===== ALATOO =====
+@bot.message_handler(func=lambda m: m.text == "🏔 Alatoo")
+def alatoo_korsat(message):
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    markup.add(
+        types.InlineKeyboardButton("🥤 Ichilish tartibi", callback_data="alatoo_ichish"),
+        types.InlineKeyboardButton("💬 Mijozlar fikri", callback_data="alatoo_fikr")
+    )
+    try:
+        bot.send_video(message.chat.id, ALATOO_VIDEO_ID, caption="🏔 Alatoo\n💰 1.370.000 so'm", supports_streaming=True, reply_markup=markup)
+    except Exception as e:
+        print(f"ALATOO VIDEO XATO: {e}")
+        bot.send_message(message.chat.id, "🏔 Alatoo\n💰 1.370.000 so'm", reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda call: call.data == "alatoo_ichish")
+def alatoo_ichish(call):
+    bot.answer_callback_query(call.id)
+    text = (
+        "🥤 Ichilish tartibi:\n\n"
+        "3 yoshdan 7 yoshgacha - 3 mahal 1 choy qoshiqdan\n"
+        "7 yoshdan 12 yoshgacha - 1 osh qoshiqdan\n"
+        "12 yoshdan kattalar - 2 osh qoshiqdan, 3 mahal"
+    )
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="alatoo_buyurtma"))
+    bot.send_message(call.message.chat.id, text, reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda call: call.data == "alatoo_fikr")
+def alatoo_fikr(call):
+    bot.answer_callback_query(call.id)
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="alatoo_buyurtma"))
+    try:
+        bot.send_video(call.message.chat.id, ALATOO_FIKR_VIDEO_ID, caption="💬 Mijozlarimiz fikri - Alatoo", supports_streaming=True, reply_markup=markup)
+    except Exception as e:
+        print(f"ALATOO FIKR VIDEO XATO: {e}")
+        bot.send_message(call.message.chat.id, "💬 Mijozlar fikri tez orada!", reply_markup=markup)
 
 # ===== CHOY =====
 @bot.message_handler(func=lambda m: m.text == "☕ Doctor Ali choyi")
@@ -91,7 +132,7 @@ def mijoz_fikri(call):
     except:
         bot.send_message(call.message.chat.id, "💬 Mijozlarimiz fikri tez orada!", reply_markup=markup)
 
-# ===== ELIXIR - YANGI ID BILAN =====
+# ===== ELIXIR =====
 @bot.message_handler(func=lambda m: m.text == "Doctor Ali Elixir Premium")
 def elixir_korsat(message):
     try:
@@ -221,10 +262,17 @@ def krem_fikr(call):
         markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="krem_buyurtma"))
         bot.send_message(call.message.chat.id, "💬 Mijozlar fikri tez orada!", reply_markup=markup)
 
-@bot.callback_query_handler(func=lambda call: call.data in ["buyurtma", "elixir_buyurtma", "krem_buyurtma"])
+@bot.callback_query_handler(func=lambda call: call.data in ["buyurtma", "elixir_buyurtma", "krem_buyurtma", "alatoo_buyurtma"])
 def buyurtma_start(call):
     bot.answer_callback_query(call.id)
-    turi = "Choy" if call.data == "buyurtma" else "Elixir Premium" if call.data == "elixir_buyurtma" else "Doctor Ali kremi"
+    if call.data == "buyurtma":
+        turi = "Choy"
+    elif call.data == "elixir_buyurtma":
+        turi = "Elixir Premium"
+    elif call.data == "alatoo_buyurtma":
+        turi = "Alatoo"
+    else:
+        turi = "Doctor Ali kremi"
     bot.send_message(call.message.chat.id, f"📦 {turi} uchun\n📞 Telefon raqamingizni yozing:")
 
 @bot.message_handler(func=lambda m: m.text is not None and len(m.text) >= 9)
