@@ -9,6 +9,7 @@ ADMIN_ID = 1271938077
 bot = telebot.TeleBot(BOT_TOKEN)
 
 VIDEO_FILE_ID = "BAACAgIAAxkBAANaas9MA9e_BNu9Pg2fqLHekHxFSOcAAiukAAJXboFKacmQsAP-vEo9BA"
+CHOY_FIKR_VIDEO_2 = "BAACAgIAAxkBAAP1atNJ6iaR5m8ay7EeSs8f7g4nNcAAAkqtAAKMk6FKQ3F6llTwBYI9BA" # YANGI QO'SHILDI
 ELIXIR_VIDEO_FILE_ID = "BAACAgIAAxkBAAOoatB3W-M6AQAB-6O4fUsizlhIsVmdAAIErgACqe2BShIC0a6dfwiQPQQ"
 KREM_VIDEO_ID_1 = "BAACAgIAAxkBAAOPatB1BvqP93UPUc1bo_1C76R2z4MAAuitAAKp7YFK0a4Bv_IxqLw9BA"
 KREM_VIDEO_ID_2 = "BAACAgIAAxkBAAOSatB1WPGI2rzUQ5AfPBqIgYbes0IAAu-tAAKp7YFK6OdSbCMR1Po9BA"
@@ -125,11 +126,15 @@ def tarkib_info(call):
 @bot.callback_query_handler(func=lambda call: call.data == "fikr")
 def mijoz_fikri(call):
     bot.answer_callback_query(call.id)
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="buyurtma"))
     try:
-        bot.send_video(call.message.chat.id, VIDEO_FILE_ID, caption="💬 Mijozlarimiz fikri:", supports_streaming=True, reply_markup=markup)
-    except:
+        bot.send_video(call.message.chat.id, VIDEO_FILE_ID, caption="💬 Mijozlarimiz fikri 1/2:", supports_streaming=True)
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="buyurtma"))
+        bot.send_video(call.message.chat.id, CHOY_FIKR_VIDEO_2, caption="💬 Mijozlarimiz fikri 2/2:", supports_streaming=True, reply_markup=markup)
+    except Exception as e:
+        print(f"CHOY FIKR XATO: {e}")
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("📦 Buyurtma berish", callback_data="buyurtma"))
         bot.send_message(call.message.chat.id, "💬 Mijozlarimiz fikri tez orada!", reply_markup=markup)
 
 # ===== ELIXIR =====
