@@ -26,14 +26,33 @@ def keep_alive():
     t = Thread(target=run)
     t.start()
 
-@bot.message_handler(commands=['start'])
-def start(message):
+def main_menu():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(types.KeyboardButton("☕ Doctor Ali choyi"))
     markup.add(types.KeyboardButton("Doctor Ali Elixir Premium"))
-    markup.add(types.KeyboardButton("Doctor Ali kremi")) # EMOJISIZ, PROBELSIZ
+    markup.add(types.KeyboardButton("Doctor Ali kremi"))
     markup.add(types.KeyboardButton("🏔 Alatoo"))
+    return markup
+
+@bot.message_handler(commands=['start'])
+def start(message):
+    payload = ""
+    parts = message.text.split(maxsplit=1)
+    if len(parts) > 1:
+        payload = parts[1].lower()
+
+    markup = main_menu()
     bot.send_message(message.chat.id, "Assalomu alaykum! Mahsulotni tanlang:", reply_markup=markup)
+
+    # Link orqali kirganda ham avval menyu chiqadi, keyin mahsulot
+    if "choy" in payload or payload == "doctor_ali":
+        choy_korsat(message)
+    elif "elixir" in payload:
+        elixir_korsat(message)
+    elif "krem" in payload:
+        krem_korsat(message)
+    elif "alatoo" in payload:
+        alatoo_korsat(message)
 
 # ===== ALATOO =====
 @bot.message_handler(func=lambda m: m.text == "🏔 Alatoo")
@@ -211,8 +230,8 @@ def elixir_fikr(call):
         print(f"ELIXIR VIDEO XATO: {e}")
         bot.send_message(call.message.chat.id, "💬 Mijozlar fikri tez orada!", reply_markup=markup)
 
-# ===== KREM - TUZATILDI - EMOJISIZ VA UNIVERSAL =====
-@bot.message_handler(func=lambda m: m.text and "kremi" in m.text.lower())
+# ===== KREM =====
+@bot.message_handler(func=lambda m: m.text == "Doctor Ali kremi")
 def krem_korsat(message):
     try:
         with open('doctor_ali_kremi.jpg', 'rb') as photo:
@@ -280,11 +299,15 @@ def buyurtma_start(call):
         turi = "Doctor Ali kremi"
     bot.send_message(call.message.chat.id, f"📦 {turi} uchun\n📞 Telefon raqamingizni yozing:")
 
-@bot.message_handler(func=lambda m: m.text is not None and len(m.text) >= 9)
+# FAQAT TELEFON UCHUN - MENYUNI TO'SMAYDIGAN QILIB TUZATILDI
+@bot.message_handler(func=lambda m: m.text is not None and m.text not in ["☕ Doctor Ali choyi", "Doctor Ali Elixir Premium", "Doctor Ali kremi", "🏔 Alatoo", "/start"] and "kremi" not in m.text.lower())
 def qabul_qilish(message):
-    if not any(x in message.text for x in ['998', '+', '90', '91', '93', '94', '97', '88']):
+    if not message.text or len(message.text) < 9:
         return
-    bot.send_message(message.chat.id, "✅ Rahmat! Buyurtmangiz qabul qilindi!")
+    if not any(x in message.text for x in ['998', '+', '90', '91', '93', '94', '97', '88', '33']):
+        return
+        
+    bot.send_message(message.chat.id, "✅ Rahmat! Buyurtmangiz qabul qilindi!\nTez orada operatorimiz bog'lanadi.", reply_markup=main_menu())
     try:
         username = f"@{message.from_user.username}" if message.from_user.username else ""
         matn = f"🔔 YANGI BUYURTMA!\nIsmi: {message.from_user.first_name}\nTel: {message.text}\n{username}\nID: {message.from_user.id}"
