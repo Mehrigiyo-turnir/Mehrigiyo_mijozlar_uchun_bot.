@@ -9,7 +9,7 @@ ADMIN_ID = 1271938077
 bot = telebot.TeleBot(BOT_TOKEN)
 
 VIDEO_FILE_ID = "BAACAgIAAxkBAANaas9MA9e_BNu9Pg2fqLHekHxFSOcAAiukAAJXboFKacmQsAP-vEo9BA"
-CHOY_FIKR_VIDEO_2 = "BAACAgIAAxkBAAP1atNJ6iaR5m8ay7EeSs8f7g4nNcAAAkqtAAKMk6FKQ3F6llTwBYI9BA" # YANGI QO'SHILDI
+CHOY_FIKR_VIDEO_2 = "BAACAgIAAxkBAAP1atNJ6iaR5m8ay7EeSs8f7g4nNcAAAkqtAAKMk6FKQ3F6llTwBYI9BA"
 ELIXIR_VIDEO_FILE_ID = "BAACAgIAAxkBAAOoatB3W-M6AQAB-6O4fUsizlhIsVmdAAIErgACqe2BShIC0a6dfwiQPQQ"
 KREM_VIDEO_ID_1 = "BAACAgIAAxkBAAOPatB1BvqP93UPUc1bo_1C76R2z4MAAuitAAKp7YFK0a4Bv_IxqLw9BA"
 KREM_VIDEO_ID_2 = "BAACAgIAAxkBAAOSatB1WPGI2rzUQ5AfPBqIgYbes0IAAu-tAAKp7YFK6OdSbCMR1Po9BA"
@@ -31,7 +31,7 @@ def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(types.KeyboardButton("☕ Doctor Ali choyi"))
     markup.add(types.KeyboardButton("Doctor Ali Elixir Premium"))
-    markup.add(types.KeyboardButton(" Doctor Ali kremi"))
+    markup.add(types.KeyboardButton("Doctor Ali kremi")) # EMOJISIZ, PROBELSIZ
     markup.add(types.KeyboardButton("🏔 Alatoo"))
     bot.send_message(message.chat.id, "Assalomu alaykum! Mahsulotni tanlang:", reply_markup=markup)
 
@@ -211,8 +211,8 @@ def elixir_fikr(call):
         print(f"ELIXIR VIDEO XATO: {e}")
         bot.send_message(call.message.chat.id, "💬 Mijozlar fikri tez orada!", reply_markup=markup)
 
-# ===== KREM =====
-@bot.message_handler(func=lambda m: m.text == " Doctor Ali kremi")
+# ===== KREM - TUZATILDI - EMOJISIZ VA UNIVERSAL =====
+@bot.message_handler(func=lambda m: m.text and "kremi" in m.text.lower())
 def krem_korsat(message):
     try:
         with open('doctor_ali_kremi.jpg', 'rb') as photo:
